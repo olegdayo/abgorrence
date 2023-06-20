@@ -30,3 +30,7 @@ func (s *Set[T]) GetAll() []T {
 	}
 	return items
 }
+
+func (s *Set[T]) Length() int {
+	return len(s.items)
+}

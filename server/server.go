@@ -8,6 +8,7 @@ import (
 )
 
 type Server struct {
+	http.Server
 	relations relations.Relations
 }
 
@@ -18,7 +19,7 @@ func (s *Server) AddHandler(endpoint endpoint.Endpoint, handler func(context.Con
 	)
 }
 
-func New(gateway endpoint.Endpoint) *Server {
+func New() *Server {
 	return &Server{
 		relations: relations.New(),
 	}

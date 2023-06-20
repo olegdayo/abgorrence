@@ -81,12 +81,12 @@ func writeError(rw http.ResponseWriter, message string, err error) {
 	log.Printf("Writing error. %s: %+v", message, err)
 	bytes, err := json.Marshal(newErrorResponse(message, err))
 	if err != nil {
-		log.Printf("Error during writing: %+v")
+		log.Printf("Error during writing: %+v", err)
 	}
 
 	n, err := rw.Write(bytes)
 	if err != nil {
-		log.Printf("Error during writing: %+v")
+		log.Printf("Error during writing: %+v", err)
 	}
 	log.Printf("Sent bytes: %d, actual message length: %d", n, len(bytes))
 }
