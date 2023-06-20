@@ -5,6 +5,3 @@
 .fleet/
 .idea/
 .vscode/
-
-# Other
-go.sum
