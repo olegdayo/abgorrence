@@ -11,11 +11,13 @@ import (
 
 type handlerWrapper interface {
 	http.Handler
+	SetSource(endpoint.Endpoint)
 	SetTargets([]endpoint.Endpoint)
 }
 
 type Wrapper[Req Request, Resp Response] struct {
 	handler func(ctx context.Context, req Req) (Resp, error)
+	source  endpoint.Endpoint
 	targets []endpoint.Endpoint
 }
 
@@ -25,13 +27,22 @@ func Init[Req Request, Resp Response](handler func(ctx context.Context, req Req)
 	}
 }
 
+func (w *Wrapper[Req, Resp]) SetSource(source endpoint.Endpoint) {
+	w.source = source
+}
+
 func (w *Wrapper[Req, Resp]) SetTargets(targets []endpoint.Endpoint) {
 	w.targets = targets
 }
 
 func (w *Wrapper[Req, Resp]) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
-	var req Req
+	if r.Method != w.source.Method.ToString() {
+		rw.WriteHeader(http.StatusBadRequest)
+		writeError(rw, "bad request", fmt.Errorf("expected method: %s, got method: %s", w.source.Method.ToString(), r.Method))
+		return
+	}
 
+	var req Req
 	if req.Type() == Filled {
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {

@@ -20,6 +20,7 @@ func New(addr string) *Server {
 }
 
 func (s *Server) AddHandler(endpoint endpoint.Endpoint, handler handlerWrapper) {
+	handler.SetSource(endpoint)
 	handler.SetTargets(s.relations.GetRelationsFor(endpoint))
 	http.Handle(
 		endpoint.URL,
