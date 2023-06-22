@@ -10,12 +10,14 @@ import (
 type Client struct {
 	relations relations.Relations
 	current   endpoint.Endpoint
+	addr      string
 }
 
-func New(gateway endpoint.Endpoint) *Client {
+func New(gateway endpoint.Endpoint, addr string) *Client {
 	return &Client{
 		relations: relations.New(),
 		current:   gateway,
+		addr:      addr,
 	}
 }
 
