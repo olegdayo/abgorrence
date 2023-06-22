@@ -9,11 +9,9 @@ import (
 	"net/http"
 )
 
-type Request interface {
-	Validate() error
-}
-
-type Response interface {
+type handlerWrapper interface {
+	http.Handler
+	SetTargets([]endpoint.Endpoint)
 }
 
 type Wrapper[Req Request, Resp Response] struct {
@@ -21,28 +19,33 @@ type Wrapper[Req Request, Resp Response] struct {
 	targets []endpoint.Endpoint
 }
 
-func Init[Req Request, Resp Response](handler func(ctx context.Context, req Req) (Resp, error), targets []endpoint.Endpoint) Wrapper[Req, Resp] {
-	return Wrapper[Req, Resp]{
+func Init[Req Request, Resp Response](handler func(ctx context.Context, req Req) (Resp, error)) *Wrapper[Req, Resp] {
+	return &Wrapper[Req, Resp]{
 		handler: handler,
-		targets: targets,
 	}
 }
 
-func (w Wrapper[Req, Resp]) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
+func (w *Wrapper[Req, Resp]) SetTargets(targets []endpoint.Endpoint) {
+	w.targets = targets
+}
+
+func (w *Wrapper[Req, Resp]) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	var req Req
 
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		rw.WriteHeader(http.StatusInternalServerError)
-		writeError(rw, "failed to parse request", err)
-		return
-	}
+	if req.Type() == Filled {
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			rw.WriteHeader(http.StatusInternalServerError)
+			writeError(rw, "failed to parse request", err)
+			return
+		}
 
-	errValidation := req.Validate()
-	if errValidation != nil {
-		rw.WriteHeader(http.StatusBadRequest)
-		writeError(rw, "bad request", errValidation)
-		return
+		errValidation := req.Validate()
+		if errValidation != nil {
+			rw.WriteHeader(http.StatusBadRequest)
+			writeError(rw, "bad request", errValidation)
+			return
+		}
 	}
 
 	resp, err := w.handler(r.Context(), req)
@@ -60,11 +63,11 @@ func (w Wrapper[Req, Resp]) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, _ = rw.Write(rawData)
-
 	for _, target := range w.targets {
 		rw.Header().Add("link", target.URL)
 	}
+
+	_, _ = rw.Write(rawData)
 }
 
 type ErrorResponse struct {

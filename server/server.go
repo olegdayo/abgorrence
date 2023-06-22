@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"github.com/offluck/abgorrence/common/models/endpoint"
 	"github.com/offluck/abgorrence/common/models/relations"
 	"net/http"
@@ -20,10 +19,11 @@ func New(addr string) *Server {
 	return s
 }
 
-func (s *Server) AddHandler(endpoint endpoint.Endpoint, handler func(context.Context, Request) (Response, error)) {
+func (s *Server) AddHandler(endpoint endpoint.Endpoint, handler handlerWrapper) {
+	handler.SetTargets(s.relations.GetRelationsFor(endpoint))
 	http.Handle(
 		endpoint.URL,
-		Init[Request, Response](handler, s.relations.GetRelationsFor(endpoint)),
+		handler,
 	)
 }
 

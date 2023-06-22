@@ -2,15 +2,31 @@ package main
 
 import (
 	"github.com/offluck/abgorrence/common/models/endpoint"
+	"github.com/offluck/abgorrence/examples/simple-server/endpoints"
 	"github.com/offluck/abgorrence/server"
 )
 
 func main() {
-	serv := server.New()
-	serv.AddRelation(
-		endpoint.New("/", endpoint.GET),
-		endpoint.New("/test", endpoint.GET),
+	s := server.New(":8080")
+
+	gateway := endpoint.New("/", endpoint.GET)
+	test := endpoint.New("/test", endpoint.GET)
+
+	s.AddRelation(
+		gateway,
+		test,
 	)
-	serv.Addr = ":8080"
-	serv.ListenAndServe()
+
+	s.AddHandler(
+		gateway,
+		server.Init(endpoints.GateWayHandle),
+	)
+	s.AddHandler(
+		test,
+		server.Init(endpoints.TestHandle),
+	)
+
+	if err := s.ListenAndServe(); err != nil {
+		panic(err)
+	}
 }
