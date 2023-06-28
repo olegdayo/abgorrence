@@ -37,7 +37,7 @@ func (c *Client) CanProceed(to endpoint.Endpoint) bool {
 	return c.IsRelationPresent(c.current, to)
 }
 
-func (c *Client) SendRequest(to endpoint.Endpoint, method endpoint.Method) error {
+func (c *Client) SendRequest(to endpoint.Endpoint, method endpoint.Endpoint) error {
 	if !c.CanProceed(to) {
 		return fmt.Errorf("cannot get from %s to %s", c.current, to)
 	}

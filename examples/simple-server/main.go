@@ -8,9 +8,23 @@ import (
 
 func main() {
 	s := server.New(":8080")
+	baseURL := "http://localhost:8080"
 
-	gateway := endpoint.New("/", endpoint.GET)
-	test := endpoint.New("/test", endpoint.GET)
+	gateway := endpoint.New(
+		"gateway",
+		baseURL,
+		"/",
+		endpoint.GET,
+		endpoint.ApplicationJSON,
+	)
+
+	test := endpoint.New(
+		"test",
+		baseURL,
+		"/test",
+		endpoint.GET,
+		endpoint.ApplicationJSON,
+	)
 
 	s.AddRelation(
 		gateway,

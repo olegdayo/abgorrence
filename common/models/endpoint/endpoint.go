@@ -1,13 +1,31 @@
 package endpoint
 
+import "fmt"
+
 type Endpoint struct {
-	URL    string
-	Method Method
+	ID       string
+	BaseURL  string
+	URL      string
+	Method   Method
+	DataType DataType
 }
 
-func New(url string, method Method) Endpoint {
+func New(id string, baseURl string, url string, method Method, dataType DataType) Endpoint {
 	return Endpoint{
-		URL:    url,
-		Method: method,
+		ID:       id,
+		BaseURL:  baseURl,
+		URL:      url,
+		Method:   method,
+		DataType: dataType,
 	}
+}
+
+func (e Endpoint) GetRelation() string {
+	return fmt.Sprintf(
+		`<%s%s;rel="@%s";type="%s"`,
+		e.BaseURL,
+		e.URL,
+		e.ID,
+		e.DataType,
+	)
 }
