@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/offluck/abgorrence/common/models/endpoint"
+	"github.com/offluck/abgorrence/common/models/endpoint/datatype"
 	"github.com/offluck/abgorrence/examples/simple-server/endpoints"
 	"github.com/offluck/abgorrence/server"
 )
@@ -15,7 +16,7 @@ func main() {
 		baseURL,
 		"/",
 		endpoint.GET,
-		endpoint.ApplicationJSON,
+		datatype.ApplicationJSON,
 	)
 
 	test := endpoint.New(
@@ -23,7 +24,7 @@ func main() {
 		baseURL,
 		"/test",
 		endpoint.GET,
-		endpoint.ApplicationJSON,
+		datatype.ApplicationJSON,
 	)
 
 	s.AddRelation(

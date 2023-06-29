@@ -75,7 +75,7 @@ func (w *Wrapper[Req, Resp]) ServeHTTP(rw http.ResponseWriter, r *http.Request) 
 	}
 
 	for _, target := range w.targets {
-		rw.Header().Add("link", target.URL)
+		rw.Header().Add("link", target.GetRelation())
 	}
 
 	_, _ = rw.Write(rawData)
