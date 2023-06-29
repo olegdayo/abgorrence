@@ -46,7 +46,7 @@ func (c *Client) CanProceed(to endpoint.Endpoint) bool {
 	return c.IsRelationPresent(c.current, to)
 }
 
-func (c *Client) SendRequest(to endpoint.Endpoint, method endpoint.Endpoint) error {
+func (c *Client) SendRequest(to endpoint.Endpoint, request server.Request) error {
 	if !c.CanProceed(to) {
 		return fmt.Errorf("cannot get from %s to %s", c.current, to)
 	}
@@ -54,7 +54,13 @@ func (c *Client) SendRequest(to endpoint.Endpoint, method endpoint.Endpoint) err
 	log.Printf("Proceed from %s to %s", c.current, to)
 	c.current = to
 
-	// TODO: send request
+	switch to.Method {
+	case endpoint.GET:
+	case endpoint.POST:
+	case endpoint.PUT:
+	case endpoint.PATCH:
+	case endpoint.DELETE:
+	}
 
 	return nil
 }
