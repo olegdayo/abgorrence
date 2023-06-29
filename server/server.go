@@ -39,3 +39,7 @@ func (s *Server) DeleteRelation(from endpoint.Endpoint, to endpoint.Endpoint) {
 func (s *Server) IsRelationPresent(from endpoint.Endpoint, to endpoint.Endpoint) bool {
 	return s.relations.IsRelationPresent(from, to)
 }
+
+func (s *Server) GetRelations() relations.Relations {
+	return s.relations
+}

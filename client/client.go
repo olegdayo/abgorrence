@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/offluck/abgorrence/common/models/endpoint"
 	"github.com/offluck/abgorrence/common/models/relations"
+	"github.com/offluck/abgorrence/server"
 	"log"
 )
 
@@ -18,6 +19,14 @@ func New(gateway endpoint.Endpoint, addr string) *Client {
 		relations: relations.New(),
 		current:   gateway,
 		addr:      addr,
+	}
+}
+
+func FromServer(server *server.Server, gateway endpoint.Endpoint) *Client {
+	return &Client{
+		relations: server.GetRelations(),
+		current:   gateway,
+		addr:      server.Addr,
 	}
 }
 
